@@ -1,37 +1,110 @@
-# Django and mongo-datatables Demo
+# MongoDB DataTables Django Demo
 
-A minimal, elegant demo showcasing the integration of [mongo-datatables](https://github.com/MongoDataTables/mongo-datatables) with Django 5.0.3.
+A comprehensive demonstration application showcasing the integration of MongoDB with jQuery DataTables for efficient server-side processing, built using Django 5.0.3.
 
-## Features
+## About This Project
 
-- Single page application with a clean, modern UI
-- MongoDB integration with DataTables for server-side processing
-- Support for nested document fields
-- Full CRUD operations via DataTables Editor (optional)
-- Export functionality (Excel, CSV, PDF)
+This demo application illustrates how to use the `mongo-datatables` Python package to connect MongoDB collections with DataTables, enabling powerful server-side processing for large datasets with minimal configuration.
 
-## Setup
+The demo presents a fictional "Dystopian Archives" database to showcase various features including:
 
-1. Install dependencies:
+- Server-side pagination, sorting, and filtering
+- Global search across multiple fields
+- Column-specific searches
+- Support for nested document structures
+- Type-aware search operations (dates, numbers, text, etc.)
+- Proper handling of MongoDB data types
+- Optimized text search using MongoDB text indexes
+- Advanced schema system with field type definitions
+- Class-based views with dynamic schema support
+
+## Prerequisites
+
+- Python 3.9.6+
+- MongoDB 5.0+ (running locally or accessible via network)
+- pip (Python package manager)
+
+## Installation
+
+1. Clone this repository:
+   ```
+   git clone https://github.com/MongoDataTables/django-demo.git
+   cd django-demo
+   ```
+
+2. Create and activate a virtual environment:
+   ```
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+   ```
+
+3. Install required packages:
+   ```
+   pip install -r requirements.txt
+   ```
+
+4. **Important:** DataTables Editor is a commercial product and is not included in this repository.
+   - If you wish to enable the editing features, purchase a license from [DataTables Editor](https://editor.datatables.net/)
+   - Download and place the Editor files in `dystopia/books/static/books/Editor-2.4.1/`
+   - Uncomment the Editor-related lines in the HTML templates
+
+## Seeding Data
+
+To test and demonstrate the functionality of this application, you'll need sample data in your MongoDB database. The project includes a data seeding script that generates sample book records with dystopian themes.
+
+### Basic Usage
 
 ```bash
-pip install -r requirements.txt
-```
-
-2. Seed the database with sample data:
-
-```bash
+# Generate 100 sample books (default)
 python seed_data.py --count 100
+
+# Generate a specific number of books
+python seed_data.py --count 1000
+
+# Use a custom MongoDB connection string
+python seed_data.py --connection "mongodb://username:password@hostname:port/"
 ```
 
-3. Run the development server:
+### Data Structure
 
-```bash
-cd mysite
+The seeding script creates book records with the following structure:
+
+```javascript
+{
+  "NovelId": "DYST-1A2B3C4D",       // Unique identifier
+  "Title": "The Last Horizon",       // Book title
+  "Author": "Alex Zhang",            // Author name
+  "PublisherInfo": {                 // Nested publisher information
+    "Name": "Dystopian Press",
+    "Date": ISODate("2022-03-15"),
+    "Location": "New York",
+    "Edition": 2,
+    "Details": {
+      "ISBN": "978-1234567890",
+      "Format": "Hardcover",
+      "PrintRun": 25000
+    }
+  },
+  "Pages": 324,                      // Page count
+  "Themes": [                        // Array of themes
+    "Environmental collapse", 
+    "Post-apocalyptic survival"
+  ],
+  "Rating": 4.5,                     // Book rating
+  "Description": "A haunting exploration of environmental collapse..."
+}
+```
+
+This structure demonstrates many MongoDB capabilities including nested documents and arrays, making it perfect for testing the DataTables and Editor integration.
+
+## Running the Application
+
+Start the development server:
+```
 python manage.py runserver
 ```
 
-4. Open your browser and navigate to http://localhost:8000
+The application will be available at [http://localhost:8000](http://localhost:8000)
 
 ## Using DataTables Editor
 
@@ -43,20 +116,77 @@ To enable the Editor functionality:
 
 2. Place the Editor files in the static directory:
    ```
-   dystopia/books/static/Editor-2.4.1/
+   dystopia/books/static/books/Editor-2.4.1/
    ```
 
 3. Uncomment the Editor CSS and JavaScript imports in `dystopia/books/templates/books/index.html`:
    ```html
    <!-- Uncomment these lines -->
-   <link href="{% static 'Editor-2.4.1/css/editor.bootstrap5.min.css' %}" rel="stylesheet">
-   <script src="{% static 'Editor-2.4.1/js/dataTables.editor.min.js' %}"></script>
-   <script src="{% static 'Editor-2.4.1/js/editor.bootstrap5.min.js' %}"></script>
+   <link href="{% static 'books/Editor-2.4.1/css/editor.bootstrap5.min.css' %}" rel="stylesheet">
+   <script src="{% static 'books/Editor-2.4.1/js/dataTables.editor.min.js' %}"></script>
+   <script src="{% static 'books/Editor-2.4.1/js/editor.bootstrap5.min.js' %}"></script>
    ```
 
 4. Refresh the page, and you'll now have full CRUD capabilities with the Editor interface
 
 The application will automatically detect if the Editor scripts are loaded and enable the appropriate functionality.
+
+## Advanced Features
+
+### Optimized MongoDB Text Search
+
+The project includes an `OptimizedDataTables` class that extends the original `DataTables` class to leverage MongoDB text indexes for improved search performance:
+
+- Uses MongoDB text search instead of regex searches when available
+- Provides detailed query statistics for debugging
+- Maintains compatibility with the original DataTables implementation
+- Handles both simple and complex search terms
+
+### Advanced Schema System
+
+The project features a comprehensive schema system that:
+
+- Captures the complete MongoDB document structure including nested fields
+- Defines proper types for all fields including deep nested paths like 'PublisherInfo.Details.ISBN'
+- Supports special MongoDB types like 'objectid'
+- Separates schema definition from UI display concerns with DISPLAY_FIELDS dictionary
+- Uses smart field type selection for different views
+
+### Class-Based Views with Dynamic Schema Support
+
+The project uses class-based views with dynamic schema support:
+
+- `CollectionSchema` class in models.py defines field types for different collections
+- `DataTablesView` and `EditorView` class-based views dynamically determine field types based on collection name
+- Maintains backward compatibility with function-based views that delegate to the class-based views
+
+## Project Structure
+
+```
+django-demo/
+├── dystopia/                 # Main Django project
+│   ├── books/                # Books app
+│   │   ├── static/           # Static files (CSS, JS, etc.)
+│   │   │   └── books/        # App-specific static files
+│   │   ├── templates/        # Templates
+│   │   │   └── books/        # App-specific templates
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py         # MongoDB models and schema definitions
+│   │   ├── tests.py
+│   │   ├── urls.py           # URL routing
+│   │   └── views.py          # View functions and classes
+│   ├── dystopia/             # Project settings
+│   │   ├── __init__.py
+│   │   ├── asgi.py
+│   │   ├── settings.py       # Django settings
+│   │   ├── urls.py           # Main URL routing
+│   │   └── wsgi.py
+│   └── manage.py             # Django management script
+├── seed_data.py              # Data seeding script
+└── requirements.txt          # Python dependencies
+```
 
 ## Technologies
 
@@ -66,15 +196,6 @@ The application will automatically detect if the Editor scripts are loaded and e
 - Bootstrap 5
 - MongoDB
 - DataTables Editor 2.4.1 (optional)
-
-## Project Structure
-
-The project follows a minimalist approach with just the essential components:
-
-- `models.py`: Simple MongoDB connection and collection wrapper
-- `views.py`: Three focused views for the main page and API endpoints
-- `urls.py`: Clean routing for the main page and API endpoints
-- `index.html`: Single template with integrated DataTable and Editor
 
 ## mongo-datatables
 
@@ -87,5 +208,4 @@ Find mongo-datatables at [https://github.com/MongoDataTables/mongo-datatables](h
 If you find this project helpful, consider buying me a coffee!
 
 <a href="https://www.buymeacoffee.com/pjosols" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
 
