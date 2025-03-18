@@ -170,21 +170,21 @@ django-demo/
 │   │   │   └── books/        # App-specific static files
 │   │   ├── templates/        # Templates
 │   │   │   └── books/        # App-specific templates
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
+│   │   ├── tools/            # Utility tools for the books app
+│   │   ├── __init__.py       # Python package indicator
+│   │   ├── apps.py           # Django app configuration
 │   │   ├── models.py         # MongoDB models and schema definitions
-│   │   ├── tests.py
-│   │   ├── urls.py           # URL routing
+│   │   ├── urls.py           # URL routing for the books app
 │   │   └── views.py          # View functions and classes
 │   ├── dystopia/             # Project settings
-│   │   ├── __init__.py
-│   │   ├── asgi.py
+│   │   ├── __init__.py       # Python package indicator
 │   │   ├── settings.py       # Django settings
 │   │   ├── urls.py           # Main URL routing
-│   │   └── wsgi.py
+│   │   └── wsgi.py           # WSGI application entry point
+│   ├── static/               # Collected static files for production
 │   └── manage.py             # Django management script
-├── seed_data.py              # Data seeding script
+├── .gitignore                # Git ignore configuration
+├── seed_data.py              # Data seeding script for MongoDB
 └── requirements.txt          # Python dependencies
 ```
 
