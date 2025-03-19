@@ -135,7 +135,7 @@ The application will automatically detect if the Editor scripts are loaded and e
 
 ### Optimized MongoDB Text Search
 
-The project includes an `OptimizedDataTables` class that extends the original `DataTables` class to leverage MongoDB text indexes for improved search performance:
+The project leverages MongoDB text indexes for improved search performance:
 
 - Uses MongoDB text search instead of regex searches when available
 - Provides detailed query statistics for debugging
