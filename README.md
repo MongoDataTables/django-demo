@@ -142,24 +142,6 @@ The project leverages MongoDB text indexes for improved search performance:
 - Maintains compatibility with the original DataTables implementation
 - Handles both simple and complex search terms
 
-### Advanced Schema System
-
-The project features a comprehensive schema system that:
-
-- Captures the complete MongoDB document structure including nested fields
-- Defines proper types for all fields including deep nested paths like 'PublisherInfo.Details.ISBN'
-- Supports special MongoDB types like 'objectid'
-- Separates schema definition from UI display concerns with DISPLAY_FIELDS dictionary
-- Uses smart field type selection for different views
-
-### Class-Based Views with Dynamic Schema Support
-
-The project uses class-based views with dynamic schema support:
-
-- `CollectionSchema` class in models.py defines field types for different collections
-- `DataTablesView` and `EditorView` class-based views dynamically determine field types based on collection name
-- Maintains backward compatibility with function-based views that delegate to the class-based views
-
 ## Project Structure
 
 ```
